@@ -9,7 +9,8 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.screen.slot.Slot;
 
 import fi.dy.masa.itemscroller.ItemScroller;
@@ -123,7 +124,7 @@ public class RecipeStorage
         this.dirty = true;
     }
 
-    private void readFromNBT(NbtCompound nbt)
+    private void readFromNBT(NbtCompound nbt, DynamicRegistryManager registryManager)
     {
         if (nbt == null || nbt.contains("Recipes", Constants.NBT.TAG_LIST) == false)
         {
@@ -146,24 +147,24 @@ public class RecipeStorage
 
             if (index >= 0 && index < this.recipes.length)
             {
-                this.recipes[index].readFromNBT(tag);
+                this.recipes[index].readFromNBT(tag, registryManager);
             }
         }
 
         this.changeSelectedRecipe(nbt.getByte("Selected"));
     }
 
-    private NbtCompound writeToNBT(@Nonnull NbtCompound nbt)
+    private NbtCompound writeToNBT(DynamicRegistryManager registryManager)
     {
         NbtList tagRecipes = new NbtList();
+        NbtCompound nbt = new NbtCompound();
 
         for (int i = 0; i < this.recipes.length; i++)
         {
             if (this.recipes[i].isValid())
             {
-                NbtCompound tag = new NbtCompound();
+                NbtCompound tag = this.recipes[i].writeToNBT(registryManager);
                 tag.putByte("RecipeIndex", (byte) i);
-                this.recipes[i].writeToNBT(tag);
                 tagRecipes.add(tag);
             }
         }
@@ -194,7 +195,7 @@ public class RecipeStorage
         return new File(FileUtils.getMinecraftDirectory(), Reference.MOD_ID);
     }
 
-    public void readFromDisk()
+    public void readFromDisk(DynamicRegistryManager registryManager)
     {
         try
         {
@@ -207,7 +208,7 @@ public class RecipeStorage
                 if (file.exists() && file.isFile() && file.canRead())
                 {
                     FileInputStream is = new FileInputStream(file);
-                    this.readFromNBT(NbtIo.readCompressed(is, NbtTagSizeTracker.ofUnlimitedBytes()));
+                    this.readFromNBT(NbtIo.readCompressed(is, NbtSizeTracker.ofUnlimitedBytes()), registryManager);
                     is.close();
                     //ItemScroller.logger.info("Read recipes from file '{}'", file.getPath());
                 }
@@ -219,7 +220,7 @@ public class RecipeStorage
         }
     }
 
-    public void writeToDisk()
+    public void writeToDisk(DynamicRegistryManager registryManager)
     {
         if (this.dirty)
         {
@@ -239,7 +240,7 @@ public class RecipeStorage
                 File fileTmp  = new File(saveDir, this.getFileName() + ".tmp");
                 File fileReal = new File(saveDir, this.getFileName());
                 FileOutputStream os = new FileOutputStream(fileTmp);
-                NbtIo.writeCompressed(this.writeToNBT(new NbtCompound()), os);
+                NbtIo.writeCompressed(this.writeToNBT(registryManager), os);
                 os.close();
 
                 if (fileReal.exists())

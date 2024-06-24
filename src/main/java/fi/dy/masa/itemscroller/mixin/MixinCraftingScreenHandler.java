@@ -1,5 +1,7 @@
 package fi.dy.masa.itemscroller.mixin;
 
+import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.RecipeEntry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +33,8 @@ public abstract class MixinCraftingScreenHandler
             World world,
             PlayerEntity player,
             RecipeInputInventory craftingInventory,
-            CraftingResultInventory resultInv,
+            CraftingResultInventory resultInventory,
+            RecipeEntry<CraftingRecipe> recipe,
             CallbackInfo ci)
     {
         //InventoryUtils.onSlotChangedCraftingGrid(player, craftingInv, resultInv);

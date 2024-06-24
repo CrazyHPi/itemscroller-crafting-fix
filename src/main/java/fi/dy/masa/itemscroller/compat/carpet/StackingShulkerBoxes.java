@@ -2,11 +2,12 @@ package fi.dy.masa.itemscroller.compat.carpet;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 
 import java.lang.invoke.*;
-import java.util.function.Function;
 import java.util.function.IntSupplier;
 
 public class StackingShulkerBoxes {
@@ -17,14 +18,6 @@ public class StackingShulkerBoxes {
             try {
                 enabled = true;
                 MethodHandles.Lookup lookup = MethodHandles.lookup();
-                MethodHandle shulkerBoxHasItemsTarget = lookup.findStatic(Class.forName("carpet.helpers.InventoryHelper"), "shulkerBoxHasItems", MethodType.methodType(boolean.class, ItemStack.class));
-                shulkerBoxHasItems = (ItemStack stack) -> {
-                    try {
-                        return (Boolean) shulkerBoxHasItemsTarget.invokeWithArguments(stack);
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                };
                 MethodHandle shulkerBoxStackSizeHandle = lookup.findStaticVarHandle(Class.forName("carpet.CarpetSettings"), "shulkerBoxStackSize", int.class).toMethodHandle(VarHandle.AccessMode.GET);
                 shulkerBoxStackSizeGetter = ()-> {
                     try {
@@ -39,8 +32,7 @@ public class StackingShulkerBoxes {
             }
         }
     }
-    private static IntSupplier shulkerBoxStackSizeGetter = null;
-    private static Function<ItemStack, Boolean> shulkerBoxHasItems = null;
+    private static IntSupplier shulkerBoxStackSizeGetter = () -> 1; // avoid init fail cause NullPointerException
 
     /**
      * @param stack {@link ItemStack}
@@ -51,10 +43,10 @@ public class StackingShulkerBoxes {
     public static int getMaxCount(ItemStack stack){
         if (!enabled) return stack.getMaxCount();
         int shulkerBoxStackSize = shulkerBoxStackSizeGetter.getAsInt();
-        if (shulkerBoxStackSize > 1 &&
-                stack.getItem() instanceof BlockItem &&
-                ((BlockItem)stack.getItem()).getBlock() instanceof ShulkerBoxBlock &&
-                !shulkerBoxHasItems.apply(stack)
+        if (shulkerBoxStackSize > 1
+                && stack.getItem() instanceof BlockItem
+                && ((BlockItem)stack.getItem()).getBlock() instanceof ShulkerBoxBlock
+                && stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).stream().findAny().isEmpty()
         ) {
             return shulkerBoxStackSize;
         }

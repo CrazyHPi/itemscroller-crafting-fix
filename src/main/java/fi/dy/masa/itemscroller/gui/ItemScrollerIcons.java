@@ -13,7 +13,7 @@ public enum ItemScrollerIcons implements IGuiIcon
     STAR_5_YELLOW           (112, 18, 5, 5),
     STAR_5_PURPLE           (117, 18, 5, 5);
 
-    public static final Identifier TEXTURE = new Identifier(Reference.MOD_ID, "textures/gui/gui_widgets.png");
+    public static final Identifier TEXTURE = Identifier.splitOn("itemscroller:textures/gui/gui_widgets.png", ':');
 
     private final int u;
     private final int v;

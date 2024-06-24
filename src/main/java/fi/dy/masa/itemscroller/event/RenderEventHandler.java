@@ -18,6 +18,7 @@ import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.util.AccessorUtils;
 import fi.dy.masa.itemscroller.util.InputUtils;
 import fi.dy.masa.itemscroller.util.InventoryUtils;
+import org.joml.Matrix4fStack;
 
 public class RenderEventHandler
 {
@@ -51,10 +52,10 @@ public class RenderEventHandler
 
             this.calculateRecipePositions(gui);
 
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(this.recipeListX, this.recipeListY, 0);
-            matrixStack.scale((float) this.scale, (float) this.scale, 1);
+            Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+            matrix4fStack.pushMatrix();
+            matrix4fStack.translate(this.recipeListX, this.recipeListY, 0);
+            matrix4fStack.scale((float) this.scale, (float) this.scale, 1);
 
             String str = StringUtils.translate("itemscroller.gui.label.recipe_page", (first / countPerPage) + 1, recipes.getTotalRecipeCount() / countPerPage);
 
@@ -80,7 +81,7 @@ public class RenderEventHandler
                 this.renderRecipeItems(recipe, recipes.getRecipeCountPerPage(), gui, drawContext);
             }
 
-            matrixStack.pop();
+            matrix4fStack.popMatrix();
             RenderSystem.applyModelViewMatrix();
             RenderSystem.enableBlend(); // Fixes the crafting book icon rendering
         }
@@ -106,9 +107,9 @@ public class RenderEventHandler
             final int recipeId = this.getHoveredRecipeId(mouseX, mouseY, recipes, gui);
 
             float offset = 300f;
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(0, 0, offset);
+            Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+            matrix4fStack.pushMatrix();
+            matrix4fStack.translate(0, 0, offset);
 
             if (recipeId >= 0)
             {
@@ -126,7 +127,7 @@ public class RenderEventHandler
                 }
             }
 
-            matrixStack.pop();
+            matrix4fStack.popMatrix();
             RenderSystem.applyModelViewMatrix();
         }
     }

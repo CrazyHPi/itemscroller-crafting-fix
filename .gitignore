@@ -10,3 +10,5 @@ build.number
 run/
 .DS_Store
 launch.json
+out/
+.idea/

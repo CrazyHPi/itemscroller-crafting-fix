@@ -30,6 +30,7 @@ import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
@@ -98,10 +99,10 @@ public class InventoryUtils
         // Set dummy slots with recipe pattern
         for (int i = 0; i < items.length; i++) {
             search.setStack(i, items[i]);
-            ;
         }
+        CraftingRecipeInput input = search.createRecipeInput();
 
-        return recipeManager.getFirstMatch(RecipeType.CRAFTING, search, mc.world);
+        return recipeManager.getFirstMatch(RecipeType.CRAFTING, input, mc.world);
     }
 
     public static String getStackString(ItemStack stack)
@@ -111,7 +112,7 @@ public class InventoryUtils
             Identifier rl = Registries.ITEM.getId(stack.getItem());
             String idStr = rl != null ? rl.toString() : "null";
             String displayName = stack.getName().getString();
-            String nbtStr = stack.getNbt() != null ? stack.getNbt().toString() : "<no NBT>";
+            String nbtStr = stack.getComponents() != null ? stack.getComponents().toString() : "<no NBT>";
 
             return String.format("[%s - display: %s - NBT: %s] (%s)", idStr, displayName, nbtStr, stack);
         }
@@ -1073,8 +1074,8 @@ public class InventoryUtils
             return;
         }
 
-        ItemStack buy1 = recipe.getAdjustedFirstBuyItem();
-        ItemStack buy2 = recipe.getSecondBuyItem();
+        ItemStack buy1 = recipe.getDisplayedFirstBuyItem();
+        ItemStack buy2 = recipe.getDisplayedSecondBuyItem();
 
         if (isStackEmpty(buy1) == false)
         {
@@ -1947,7 +1948,7 @@ public class InventoryUtils
 
     public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2)
     {
-        return ItemStack.canCombine(stack1, stack2);
+        return ItemStack.areItemsAndComponentsEqual(stack1, stack2);
     }
 
     private static boolean areSlotsInSameInventory(Slot slot1, Slot slot2)
