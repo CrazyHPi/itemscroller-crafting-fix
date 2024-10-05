@@ -72,16 +72,11 @@ public class InventoryUtils
     private static boolean inhibitCraftResultUpdate;
 
     public static RecipeEntry<CraftingRecipe> getBookRecipeEntryFromPattern(RecipePattern recipe) {
-        if (recipe.cachedRecipeEntryFromBook != null) // Check if recipe is already cached (kindof unnecessary)
-        {
-            return recipe.cachedRecipeEntryFromBook;
-        } else {
-            Optional<RecipeEntry<CraftingRecipe>> optional = getRecipeFromPattern(recipe); // get book recipe if cache not found
+        // get the CraftingRecipe
+        Optional<RecipeEntry<CraftingRecipe>> optional = getRecipeFromPattern(recipe);
 
-            if (optional.isPresent()) {
-                recipe.cachedRecipeEntryFromBook = optional.get();
-                return recipe.cachedRecipeEntryFromBook;
-            }
+        if (optional.isPresent()) {
+            return optional.get();
         }
         return null;
     }

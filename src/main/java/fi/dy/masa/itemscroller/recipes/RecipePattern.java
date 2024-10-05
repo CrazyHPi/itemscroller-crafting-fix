@@ -24,8 +24,7 @@ public class RecipePattern
 {
     private ItemStack result = InventoryUtils.EMPTY_STACK;
     private ItemStack[] recipe = new ItemStack[9];
-    public CraftingRecipe cachedRecipeFromBook = null;
-    public RecipeEntry<CraftingRecipe> cachedRecipeEntryFromBook = null;
+    private RecipeEntry<CraftingRecipe> cachedRecipeEntryFromBook = null;
 
     private int maxCraftAmount = 64;
     private HashSet<Item> recipeRemainders = new HashSet<Item>();
@@ -47,7 +46,7 @@ public class RecipePattern
     {
         Arrays.fill(this.recipe, InventoryUtils.EMPTY_STACK);
         this.result = InventoryUtils.EMPTY_STACK;
-        this.cachedRecipeFromBook = null;
+        this.cachedRecipeEntryFromBook = null;
         this.maxCraftAmount = 64;
         this.recipeRemainders.clear();
     }
@@ -71,6 +70,17 @@ public class RecipePattern
                 maxCraftAmount = maxCount;
             }
         }
+
+        // try to cache CraftingRecipe
+        this.cachedRecipeEntryFromBook = InventoryUtils.getBookRecipeEntryFromPattern(this);
+    }
+
+    public RecipeEntry<CraftingRecipe> getCraftingRecipe() {
+        // only re-get CraftingRecipe when cache is null
+        if (this.cachedRecipeEntryFromBook == null) {
+            this.cachedRecipeEntryFromBook = InventoryUtils.getBookRecipeEntryFromPattern(this);
+        }
+        return this.cachedRecipeEntryFromBook;
     }
 
     public int getMaxCraftAmount() {
