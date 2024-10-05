@@ -38,7 +38,7 @@ public class StackingShulkerBoxes {
      * @param stack {@link ItemStack}
      * @return Stack size considering empty boxes stacking rule from carpet mod
      * @author <a href="https://github.com/gnembon">gnembon</a>, <a href="https://github.com/vlad2305m">vlad2305m</a>
-     * @see <a href="https://https://github.com/gnembon/fabric-carpet/blob/master/src/main/java/carpet/mixins/Slot_stackableSBoxesMixin.java">Original implementation</a>
+     * @see <a href="https://github.com/gnembon/fabric-carpet/blob/master/src/main/java/carpet/mixins/ItemStack_stackableShulkerBoxesMixin.java">Original implementation</a>
      */
     public static int getMaxCount(ItemStack stack){
         if (!enabled) return stack.getMaxCount();

@@ -8,6 +8,7 @@ import fi.dy.masa.itemscroller.compat.carpet.StackingShulkerBoxes;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.CraftingRecipe;
@@ -61,6 +62,9 @@ public class RecipePattern
         for (int i = 0; i < this.recipe.length; i++) {
             if (this.recipe[i].getItem().hasRecipeRemainder()) {
                 this.recipeRemainders.add(recipe[i].getItem().getRecipeRemainder());
+            }
+            if (this.recipe[i].getItem() == Items.AIR) {
+                continue;
             }
             int maxCount = StackingShulkerBoxes.getMaxCount(this.recipe[i]);
             if (maxCount < maxCraftAmount) {
